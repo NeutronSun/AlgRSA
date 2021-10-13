@@ -3,10 +3,8 @@ import java.util.Scanner;
 
 public class Main {
     public static void main(String[] args) throws Exception {
-        Fermat f = new Fermat();
-        if(!f.existsFile())
-            f.createFile();
-        
+        TheBigFile fl = new TheBigFile();
+        Fermat f = new Fermat(fl);
         Scanner in = new Scanner(System.in);
         while(true) {
             System.out.println("1| Create a new File");
@@ -14,13 +12,15 @@ public class Main {
             switch(in.nextInt()) {
 
                 case 1:
-                System.out.print("Enter the number of digits: ");
-                int nD = in.nextInt();
-                System.out.print("Enter the number of Prime to find: ");
-                int nP = in.nextInt();
-                f.setNdigits(nD);
-                f.setNprime(nP);
                 f.findPrimeWith();
+                break;
+
+                case 2:
+                if(!fl.fileExists()){
+                    System.out.println("Unable to find the file with the prime numbers for the RSA algorithm, please create it.");
+                    f.findPrimeWith();
+                }
+                Rsa rsa = new Rsa(fl);
             }
         }
         

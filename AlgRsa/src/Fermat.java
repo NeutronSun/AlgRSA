@@ -5,23 +5,16 @@ import java.util.*;
 import java.math.*;
 
 public class Fermat {
-    private File file = new File("primes.txt");
+    private TheBigFile file;
     private int nPrime;
     private int nDigits;
 
-    public Fermat(){
+    public Fermat(TheBigFile file){
         nPrime = 0;
         nDigits = 0;
+        this.file = file;
     }
-
-    public boolean existsFile(){
-        return file.exists();
-    }
-
-    public void createFile() throws IOException{
-        file.createNewFile();
-    }
-
+    
     public void setNprime(int n){
         nPrime = n;
     }
@@ -31,19 +24,27 @@ public class Fermat {
     }
 
     public void findPrimeWith() throws IOException{
-        FileWriter fw = new FileWriter(file, false);
+        Scanner in = new Scanner(System.in);
+        System.out.print("Enter the number of digits: ");
+        int nD = in.nextInt();
+        System.out.print("Enter the number of Prime to find: ");
+        int nP = in.nextInt();
+        setNdigits(nD);
+        setNprime(nP);
         BigInteger start = new BigInteger("10");
-        start = start.pow(nDigits).add(start.divide(BigInteger.TWO));
+        start = start.pow(nDigits);
+        start = start.add(start.divide(BigInteger.TWO));
         if(start.mod(BigInteger.TWO).equals(BigInteger.ZERO)){
             start = start.add(new BigInteger("1"));
         }
+        String[] p = new String[nPrime+1];
         for(BigInteger i = start, cont = BigInteger.ZERO; cont.min(BigInteger.valueOf(nPrime)).equals(cont); i = i.add(BigInteger.TWO)){
             if(littleFermatTheorem(i)){
-                fw.write(i.toString() + "\n");
+                p[cont.intValue()] = i.toString();
                 cont = cont.add(BigInteger.ONE);
             }
         }
-        fw.flush();
+        file.write(p);
     }
 
     public boolean littleFermatTheorem(BigInteger p){
