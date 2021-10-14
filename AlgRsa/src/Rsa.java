@@ -2,8 +2,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 
 public class Rsa {
-    private BigInteger p = new BigInteger("0");
-    private BigInteger q = new BigInteger("0");
+    private BigInteger p = new BigInteger("7");
+    private BigInteger q = new BigInteger("17");
     private BigInteger n = new BigInteger("0");
     private BigInteger e = new BigInteger("0");
     private BigInteger d = new BigInteger("0");
@@ -13,15 +13,18 @@ public class Rsa {
 
     public Rsa(TheBigFile file){
         this.file = file;
-        setRandomPrime();
+        //setRandomPrime();
         n = p.multiply(q);
         e = coprimes();
+        d = findD();
+        System.out.println("e = " + e + " d = " + d);
     }
 
     public BigInteger findD(){
         BigInteger k = new BigInteger("1");
-        while(true){
-            
+        BigInteger phi = phi();
+        while(true) {
+            if((k.multiply(phi).add(BigInteger.ONE).divide(e)))
         }
     }
     public BigInteger phi(){
@@ -46,10 +49,12 @@ public class Rsa {
             int lines = file.countLine();
             int rand = (int)(Math.random() * lines) + 1;
             p = new BigInteger(file.getRandomLine(rand));
-            do{
-                rand = (int)(Math.random() * lines) + 1;
-                q = new BigInteger(file.getRandomLine(rand));
-            }while(p.equals(q));
+            if(rand < lines)
+                rand++; 
+            else
+                rand--;
+            q = new BigInteger(file.getRandomLine(rand));
+            
         }catch (IOException e){e.printStackTrace();}    
     }
 

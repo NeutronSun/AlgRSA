@@ -21,6 +21,7 @@ public class Main {
                     f.findPrimeWith();
                 }
                 Rsa rsa = new Rsa(fl);
+                return;
             }
         }
         
