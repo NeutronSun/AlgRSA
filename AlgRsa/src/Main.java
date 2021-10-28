@@ -6,6 +6,11 @@ public class Main {
         TheBigFile fl = new TheBigFile();
         Fermat f = new Fermat(fl);
         Scanner in = new Scanner(System.in);
+        if(!fl.fileExists()){
+            System.out.println("Unable to find the file with the prime numbers for the RSA algorithm, please create it.");
+            f.findPrimeWith();
+        }
+        Rsa rsa = new Rsa(fl);
         while(true) {
             System.out.println("1| Create a new File");
             System.out.println("2| Do RSA encryption");
@@ -16,12 +21,11 @@ public class Main {
                 break;
 
                 case 2:
-                if(!fl.fileExists()){
-                    System.out.println("Unable to find the file with the prime numbers for the RSA algorithm, please create it.");
-                    f.findPrimeWith();
-                }
-                Rsa rsa = new Rsa(fl);
-                return;
+                System.out.print("Enter the message:");
+                int msg = in.nextInt();
+                System.out.println("the encrypted message is: " + rsa.encrypt(msg));
+                BigInteger cryp = rsa.encrypt(msg);
+                System.out.println("the decrypted message is: " + rsa.decrypt(cryp));
             }
         }
         
