@@ -10,7 +10,7 @@ public class Main {
             System.out.println("Unable to find the file with the prime numbers for the RSA algorithm, please create it.");
             f.findPrimeWith();
         }
-        Rsa rsa = new Rsa(fl);
+        Rsa rsa = new Rsa();
         while(true) {
             System.out.println("1| Create a new File");
             System.out.println("2| Do RSA encryption");
@@ -22,10 +22,13 @@ public class Main {
 
                 case 2:
                 System.out.print("Enter the message:");
-                int msg = in.nextInt();
-                System.out.println("the encrypted message is: " + rsa.encrypt(msg));
-                BigInteger cryp = rsa.encrypt(msg);
-                System.out.println("the decrypted message is: " + rsa.decrypt(cryp));
+                in.nextLine();
+                String msg = in.nextLine();
+                
+               BigInteger chiper =  rsa.encrypt(msg);
+               System.out.println(chiper);
+               System.out.println(rsa.decrypt(chiper));
+                //System.out.println("the decrypted message is: " + rsa.decrypt(cryp));
             }
         }
         

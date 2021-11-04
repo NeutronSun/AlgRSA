@@ -1,31 +1,31 @@
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 
-public class Rsa {
-    private BigInteger p = new BigInteger("7");
-    private BigInteger q = new BigInteger("11");
+public class Rsa{
+    private static BigInteger lastPrime = new BigInteger("150000000000000000000000000000000000000000000000973");
+    private BigInteger p = new BigInteger("47");
+    private BigInteger q = new BigInteger("71");
     private BigInteger n = new BigInteger("0");
     private BigInteger e = new BigInteger("0");
     private BigInteger d = new BigInteger("0");
 
-    private TheBigFile file;
-    private boolean allSetted;
+    {lastPrime = newPrime(lastPrime);}
 
-
-    public Rsa(TheBigFile file) throws IOException{
-        this.file = file;
-        setRandomPrime();
+    public Rsa(){
+        p = newPrime(lastPrime);
+        System.out.println("setted");
+        q = newPrime(lastPrime);
+        System.out.println("setted");
         n = p.multiply(q);
+        System.out.println("setted");
         e = coprimes();
-        d = findD();
+        System.out.println("setted");
+        //d = findD();
+        BigInteger phi = phi();
+        d = e.modInverse(phi);
         System.out.println("phi(n): " + phi() + "|q: " + q + "|p: " + p + "|n: " + n + "|e: " + e + "|d: " + d);
-        allSetted = true;
     }
-
-    public boolean allSetted(){
-        return allSetted;
-    }
-
     public BigInteger findD(){
         BigInteger k = BigInteger.TEN.pow(e.toString().length());
         BigInteger phi = phi();
@@ -46,46 +46,48 @@ public class Rsa {
     }
     */
 
-    public BigInteger coprimes() throws IOException{
-        BigInteger phi = phi();
-        int lines = file.countLine();
-        int rand = (int)(Math.random() * lines) + 1;
-        BigInteger prime = new BigInteger(file.getRandomLine(rand));
-        /*
-        for(BigInteger i = BigInteger.TWO; i.min(phi).equals(i); i = i.add(BigInteger.ONE)){
-            if(mcm(i, phi).equals(BigInteger.ONE) && !(i.equals(p) || i.equals(q)))
-            return i;
-        }
-        */
+    public BigInteger coprimes(){
+        BigInteger prm = q;
+        return newPrime(prm);
+    }
+    public BigInteger newPrime(BigInteger prime){
+        BigInteger a = new BigInteger("2");
+        do{
+            prime = prime.add(BigInteger.TWO);
+        }while(!a.modPow(prime.subtract(BigInteger.ONE), prime).equals(BigInteger.ONE));
+        lastPrime = prime;
         return prime;
     }
-    public void setRandomPrime(){
-        try {
-            int lines = file.countLine();
-            int rand = (int)(Math.random() * lines) + 1;
-            p = new BigInteger(file.getRandomLine(rand));
-            if(rand < lines)
-                rand++; 
-            else
-                rand--;
-            q = new BigInteger(file.getRandomLine(rand));
-            
-        }catch (IOException e){e.printStackTrace();}    
+
+    public String getD(){
+        return d.toString();
     }
 
-    public BigInteger encrypt(int x){
-        BigInteger msg = new BigInteger(String.valueOf(x));
-        System.out.println(msg);
-        System.out.println(e);
-        System.out.println("msg^n: " + msg.pow(Integer.valueOf(e.toString())));
-        return msg.modPow(e, n);
+    public String getN(){
+        return n.toString();
     }
 
-    public BigInteger decrypt(BigInteger msg){
-        System.out.println(msg);
-        System.out.println(d);
-        System.out.println("msg^n: " + msg.pow(Integer.valueOf(d.toString())));
-        return msg.modPow(d,n);
+    public BigInteger encrypt(String ss) throws UnsupportedEncodingException{
+        System.out.println(ss.length());
+        ss = ss.replaceAll("<3", new StringBuilder().appendCodePoint(0x1F497).toString());
+        byte[] erbite = ss.getBytes("UTF-8");
+        for(int i = 0; i < erbite.length; i++){
+            System.out.println("byte: " +i+ " " + erbite[i]);
+        }
+        BigInteger plainText = new BigInteger(erbite);
+        System.out.println("non criptato: " + plainText);
+        return plainText.modPow(e,n);
+    }
+
+    public String decrypt(BigInteger msg){
+        msg = msg.modPow(d,n);
+        byte[] erbite = msg.toByteArray();
+        for(int i = 0; i < erbite.length; i++){
+            System.out.println("byte: " +i+ " " + erbite[i]);
+        }
+        String ss = new String(erbite);
+       // System.out.println("msg^n: " + msg.pow(Integer.valueOf(d.toString())));
+        return ss;
 
     }
 
