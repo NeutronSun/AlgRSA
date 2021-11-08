@@ -71,11 +71,17 @@ public class Rsa {
     public BigInteger encrypt(String ss) throws UnsupportedEncodingException {
         ss = ss.replaceAll("<3", new StringBuilder().appendCodePoint(0x1F497).toString());
         byte[] erbite = ss.getBytes("UTF-8");
+        byte[] toSend = new byte[erbite.length+1];
+        toSend[0] = 0;
+        for(int i = 0; i<erbite.length; i++) 
+            toSend[i+1] = erbite[i];
+        
         System.out.println(new String(erbite));
-        BigInteger plainText = new BigInteger(erbite); // <n
-        if (plainText.min(n).equals(plainText))
-            System.out.println("1: ok bro");
-        return plainText.modPow(e, n); // still <n
+        BigInteger plainText = new BigInteger(toSend); // <n
+        if (plainText.min(n).equals(plainText)){
+            return plainText.modPow(e, n); // still <n
+        }
+        return BigInteger.ZERO;
     }
 
     public String decrypt(BigInteger msg) {
