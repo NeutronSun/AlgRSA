@@ -2,6 +2,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.math.BigInteger;
 
+import javax.swing.plaf.synth.SynthScrollPaneUI;
+
 public class Rsa {
     private static BigInteger lastPrime = new BigInteger("150000000000000000000000000000000000000000000000973");
     private BigInteger p = new BigInteger("47");
@@ -9,6 +11,7 @@ public class Rsa {
     private BigInteger n = new BigInteger("0");
     private BigInteger e = new BigInteger("0");
     private BigInteger d = new BigInteger("0");
+    private BigInteger phi = new BigInteger("0");
 
     {
         lastPrime = newPrime(lastPrime);
@@ -17,14 +20,10 @@ public class Rsa {
     public Rsa() {
         p = newPrime(lastPrime);
         q = newPrime(lastPrime);
-        ;
         n = p.multiply(q);
-        System.out.println("setted");
         e = coprimes();
-        // d = findD();
-        BigInteger phi = phi();
+        phi = phi();
         d = e.modInverse(phi);
-        System.out.println("phi(n): " + phi() + "|q: " + q + "|p: " + p + "|n: " + n + "|e: " + e + "|d: " + d);
     }
 
     public BigInteger findD() {
@@ -68,7 +67,9 @@ public class Rsa {
         return n.toString();
     }
 
-    public BigInteger encrypt(String ss) throws UnsupportedEncodingException {
+    public String encrypt(String ss) throws UnsupportedEncodingException {
+        BigInteger plainText, cypher = new BigInteger("0");
+        boolean lengthPrime = false;
         ss = ss.replaceAll("<3", new StringBuilder().appendCodePoint(0x1F497).toString());
         byte[] erbite = ss.getBytes("UTF-8");
         byte[] toSend = new byte[erbite.length+1];
@@ -76,22 +77,67 @@ public class Rsa {
         for(int i = 0; i<erbite.length; i++) 
             toSend[i+1] = erbite[i];
         
-        System.out.println(new String(erbite));
-        BigInteger plainText = new BigInteger(toSend); // <n
+        plainText = new BigInteger(toSend); // <n
+        /*
         if (plainText.min(n).equals(plainText)){
-            return plainText.modPow(e, n); // still <n
+            plainText = plainText.modPow(e, n); // still <n
+            return plainText.toString();
         }
-        return BigInteger.ZERO;
+        */
+        ss = new String(plainText.toByteArray());
+        int l = ss.length();
+        //System.out.println(ss.length());
+        //System.out.println(ss);
+        int part = 1, divisor, cont = 0;
+        if(BigInteger.TWO.modPow(new BigInteger(String.valueOf(l-1)), new BigInteger(String.valueOf(ss.length()))).equals(BigInteger.ONE)){
+            lengthPrime = true;
+            l = l+1;
+        }
+
+        for(int i = 2; i <= l/20; i++) {
+            if(l % i == 0){
+                part = i;
+                cont++;
+            }
+        }
+        
+        int everyN = l/part;
+        System.out.println("l: " + l + " part: " + part + " everyN: " + everyN);
+        cont = 0;
+        String cypherText = "";
+        String supp = "";
+        for(char c : ss.toCharArray()){
+            supp = supp + c;
+            cont++;
+            if(cont == everyN){
+                plainText = new BigInteger(supp.getBytes("UTF-8"));
+                cypherText = cypherText + "//" + plainText.modPow(e, n).toString();
+                supp = "";
+                cont = 0;
+            }
+        }
+        if(lengthPrime){
+            plainText = new BigInteger(supp.getBytes("UTF-8"));
+            cypherText = cypherText + "//" + plainText.modPow(e, n).toString();
+        }
+        return cypherText;
     }
 
-    public String decrypt(BigInteger msg) {
-        if (msg.min(n).equals(msg))
-            System.out.println("2:ok bro");
-        msg = msg.modPow(d, n);
-        byte[] erbite = msg.toByteArray();
-        String ss = new String(erbite);
-        // System.out.println("msg^n: " + msg.pow(Integer.valueOf(d.toString())));
-        return ss;
+    public String decrypt(String msg) {
+        msg = msg.substring(2);
+        //System.out.println(msg);
+        String decrypted = "";
+        String part = "";
+        String[] b = msg.split("//");
+        
+        for(String s : msg.split("//")){
+            //System.out.println(s);
+            BigInteger supp = new BigInteger(s);
+            supp = supp.modPow(d,n);
+            byte[] erbite = supp.toByteArray();
+            decrypted = decrypted + new String(erbite);
+        }
+        return decrypted;
 
     }
 

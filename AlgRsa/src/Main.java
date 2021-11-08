@@ -25,11 +25,8 @@ public class Main {
                 System.out.print("Enter the message:");
                 in.nextLine();
                 String msg = in.nextLine();
-
-                BigInteger chiper = rsa.encrypt(msg);
-                System.out.println(chiper);
-                System.out.println(rsa.decrypt(chiper));
-                // System.out.println("the decrypted message is: " + rsa.decrypt(cryp));
+                msg = rsa.encrypt(msg);
+                System.out.println("-------------------------\nthe decrypted message is: " + rsa.decrypt(msg));
             }
         }
 
