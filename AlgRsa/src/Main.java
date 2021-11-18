@@ -6,10 +6,9 @@ public class Main {
         Scanner in = new Scanner(System.in);
         Rsa rsa = new Rsa();
         String msg = "";
-        String chiper = "";
         while (true) {
             System.out.println("1| Encrypt");
-            System.out.println("2| Do RSA encryption");
+            System.out.println("2| Decrypt");
             switch (in.nextInt()) {
 
             case 1:
