@@ -13,7 +13,8 @@ public class Main {
 
             case 1:
                 System.out.print("Enter the message:");
-                msg = rsa.encrypt(in.next());
+                msg = in.nextLine();
+                msg = rsa.encrypt(in.nextLine());
                 System.out.println("The encrypted message is: " + msg);
                 break;
 
